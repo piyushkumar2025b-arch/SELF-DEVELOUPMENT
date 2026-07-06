@@ -80,7 +80,7 @@ gantt
 
 ## 🌟 Feature-by-Feature Detailed Breakdown
 
-Here is a look inside the 17 integrated modules that form the heart of the workspace:
+Here is a look inside the 18 integrated modules that form the heart of the workspace:
 
 ### 📈 1. Performance Dashboard
 *   **File**: [pages_module/dashboard.py](file:///D:/self%20develoupment/SELF%20DEVELOUPMENT/pages_module/dashboard.py)
@@ -146,7 +146,11 @@ Here is a look inside the 17 integrated modules that form the heart of the works
 *   **File**: [pages_module/ai_skills.py](file:///D:/self%20develoupment/SELF%20DEVELOUPMENT/pages_module/ai_skills.py)
 *   **Features**: Learn ML pipelines, vector databases, LLM tuning techniques, and prompting skills necessary for modern AI engineering interviews.
 
-### ⚙️ 17. Settings & Customization
+### 💬 17. User Comments & Workspace Feed
+*   **File**: [pages_module/comments.py](file:///D:/self%20develoupment/SELF%20DEVELOUPMENT/pages_module/comments.py)
+*   **Features**: Share how you are feeling, write notes, or log testimonials. Renders a beautiful glassmorphic comment feed, showing user feelings, user IDs, comments, and real-time timestamps. Prepopulated with mock comments to look realistic right out of the box.
+
+### ⚙️ 18. Settings & Customization
 *   **File**: Direct route in [app.py](file:///D:/self%20develoupment/SELF%20DEVELOUPMENT/app.py)
 *   **Features**: Customize your avatar colors, username details, and upload custom wallpapers (PNG/JPG) to set your personal glassmorphic workspace aesthetic.
 
@@ -212,6 +216,7 @@ graph TD
         P_Note["notes.py"]
         P_Fit["fitness.py"]
         P_AI["ai_skills.py"]
+        P_Comm2["comments.py"]
         P_Auth["auth.py"]
     end
 
@@ -232,6 +237,7 @@ graph TD
     App --> P_Note
     App --> P_Fit
     App --> P_AI
+    App --> P_Comm2
     App --> P_Auth
 
     %% Subsystem Connections

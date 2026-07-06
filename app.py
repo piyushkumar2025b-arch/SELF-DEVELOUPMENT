@@ -106,6 +106,7 @@ else:
         "📝 Notes",
         "💪 Fitness Tracker",
         "🤖 AI Skills Corner",
+        "💬 User Comments",
         "⚙️ Settings & Customization"
     ]
 
@@ -176,6 +177,9 @@ else:
     elif choice == "🤖 AI Skills Corner":
         from pages_module.ai_skills import show_ai_skills
         show_ai_skills()
+    elif choice == "💬 User Comments":
+        from pages_module.comments import show_comments
+        show_comments()
     elif choice == "⚙️ Settings & Customization":
         st.markdown("<h1>⚙️ Settings & Customization</h1>", unsafe_allow_html=True)
         st.markdown("<p style='color:#94a3b8;'>Customize your workspace profile details and look-and-feel.</p>", unsafe_allow_html=True)

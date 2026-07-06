@@ -15,7 +15,8 @@ def show_visualizer():
 
     # Embed React + Tailwind frontend frame
     try:
-        frontend_dir = "frontend"
+        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        frontend_dir = os.path.join(root_dir, "frontend")
         with open(os.path.join(frontend_dir, "index.html"), "r", encoding="utf-8") as f:
             html_template = f.read()
         with open(os.path.join(frontend_dir, "badge_animator.js"), "r", encoding="utf-8") as f:

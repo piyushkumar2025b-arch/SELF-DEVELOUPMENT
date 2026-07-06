@@ -6,6 +6,9 @@ import os
 import base64
 from pathlib import Path
 
+# Resolve app root directory so all paths are absolute regardless of CWD
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Set page config
 st.set_page_config(
     page_title="FAANG Prep Hub",
@@ -20,7 +23,14 @@ from utils.api_helpers import get_quote_of_day
 
 # Ensure DB and directories are set up
 init_db()
-os.makedirs("dev_uploads_store", exist_ok=True)
+os.makedirs(os.path.join(APP_DIR, "dev_uploads_store"), exist_ok=True)
+
+# Try compiling C++ analytics if g++ is present
+try:
+    from cpp_modules.compile import compile_analytics
+    compile_analytics()
+except Exception as e:
+    pass
 
 # Initialize Session States
 if "logged_in" not in st.session_state:
@@ -187,8 +197,8 @@ else:
         st.markdown("### 🖼️ Upload Custom Wallpaper")
         wp_file = st.file_uploader("Upload wallpaper image (PNG/JPG)", type=["png", "jpg", "jpeg"])
         if wp_file is not None:
-            os.makedirs("wallpapers", exist_ok=True)
-            wp_path = os.path.join("wallpapers", f"wallpaper_{uid}_{wp_file.name}")
+            os.makedirs(os.path.join(APP_DIR, "wallpapers"), exist_ok=True)
+            wp_path = os.path.join(APP_DIR, "wallpapers", f"wallpaper_{uid}_{wp_file.name}")
             with open(wp_path, "wb") as f:
                 f.write(wp_file.getbuffer())
             save_wallpaper(uid, wp_path)
@@ -212,7 +222,7 @@ else:
             dev_desc = st.text_input("File Description", placeholder="e.g. C++ Compiler build instructions")
             if st.button("🚀 Save File to Vault", use_container_width=True):
                 if dev_file is not None:
-                    filepath = os.path.join("dev_uploads_store", dev_file.name)
+                    filepath = os.path.join(APP_DIR, "dev_uploads_store", dev_file.name)
                     with open(filepath, "wb") as f:
                         f.write(dev_file.getbuffer())
                     save_dev_upload(dev_file.name, filepath, dev_desc)

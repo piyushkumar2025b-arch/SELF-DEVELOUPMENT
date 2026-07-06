@@ -13,7 +13,8 @@ from db.database import get_progress, get_fitness_logs, get_notes, get_links, ge
 def run_cpp_analytics(dsa_count, streak, apt_pct, fit_count):
     # Check for executable
     exe_name = "analytics.exe" if sys.platform == "win32" else "analytics"
-    exe_path = os.path.join("cpp_modules", exe_name)
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    exe_path = os.path.join(root_dir, "cpp_modules", exe_name)
     
     if os.path.exists(exe_path):
         try:
@@ -109,7 +110,8 @@ def show_dashboard():
     # Embed React + Tailwind frontend frame
     # Load index.html, badge_animator.js, and InteractiveDashboard.jsx
     try:
-        frontend_dir = "frontend"
+        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        frontend_dir = os.path.join(root_dir, "frontend")
         with open(os.path.join(frontend_dir, "index.html"), "r", encoding="utf-8") as f:
             html_template = f.read()
         with open(os.path.join(frontend_dir, "badge_animator.js"), "r", encoding="utf-8") as f:
@@ -121,10 +123,7 @@ def show_dashboard():
         inlined_html = html_template.replace(
             '<script src="badge_animator.js"></script>',
             f'<script>{js_code}</script>'
-        ).replace(
-            '<script type="text/babel" src="InteractiveDashboard.jsx"></script>',
-            f'<script type="text/babel">{jsx_code}</script>'
-        )
+        ).split('<script type="text/javascript">')[0] + f'<script type="text/babel">{jsx_code}</script></body></html>'
         
         # Display the iframe component
         import streamlit.components.v1 as components

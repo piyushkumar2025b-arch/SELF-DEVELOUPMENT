@@ -6,7 +6,12 @@ import sqlite3
 import os
 import json
 import hashlib
-import bcrypt
+import secrets
+try:
+    import bcrypt
+    HAS_BCRYPT = True
+except ImportError:
+    HAS_BCRYPT = False
 from datetime import datetime
 from pathlib import Path
 
@@ -203,7 +208,18 @@ def init_db():
 def create_user(username: str, password: str, email: str = "") -> dict:
     conn = get_connection()
     c = conn.cursor()
-    pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+    if HAS_BCRYPT:
+        try:
+            pw_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+        except Exception:
+            # Fallback if bcrypt runtime failure
+            salt = secrets.token_hex(16)
+            h = hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 100000)
+            pw_hash = f"pbkdf2_sha256${salt}${h.hex()}"
+    else:
+        salt = secrets.token_hex(16)
+        h = hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 100000)
+        pw_hash = f"pbkdf2_sha256${salt}${h.hex()}"
     colors = ["#6366f1","#ec4899","#f59e0b","#10b981","#3b82f6","#8b5cf6"]
     import random
     color = random.choice(colors)
@@ -225,13 +241,31 @@ def verify_user(username: str, password: str) -> dict:
     c.execute("SELECT * FROM users WHERE username=?", (username,))
     row = c.fetchone()
     conn.close()
-    if row and bcrypt.checkpw(password.encode(), row["password_hash"].encode()):
-        # update last_login
-        conn2 = get_connection()
-        conn2.execute("UPDATE users SET last_login=? WHERE id=?", (datetime.now().isoformat(), row["id"]))
-        conn2.commit()
-        conn2.close()
-        return {"success": True, "user": dict(row)}
+    if row:
+        stored_hash = row["password_hash"]
+        is_verified = False
+        if stored_hash.startswith("pbkdf2_sha256$"):
+            try:
+                _, salt, h_hex = stored_hash.split("$")
+                h = hashlib.pbkdf2_hmac('sha256', password.encode(), salt.encode(), 100000)
+                is_verified = (h.hex() == h_hex)
+            except Exception:
+                is_verified = False
+        else:
+            if HAS_BCRYPT:
+                try:
+                    is_verified = bcrypt.checkpw(password.encode(), stored_hash.encode())
+                except Exception:
+                    is_verified = False
+            else:
+                is_verified = False
+        if is_verified:
+            # update last_login
+            conn2 = get_connection()
+            conn2.execute("UPDATE users SET last_login=? WHERE id=?", (datetime.now().isoformat(), row["id"]))
+            conn2.commit()
+            conn2.close()
+            return {"success": True, "user": dict(row)}
     return {"success": False, "message": "Invalid username or password."}
 
 def get_user(user_id: int) -> dict:

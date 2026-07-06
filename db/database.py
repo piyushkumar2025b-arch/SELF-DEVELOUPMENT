@@ -183,6 +183,19 @@ def init_db():
         )
     """)
 
+    # User Comments/Feedback Table
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS user_comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            username TEXT,
+            feeling TEXT,
+            comment TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -512,5 +525,23 @@ def delete_community_post(post_id: int):
     conn.execute("DELETE FROM community_posts WHERE id=?", (post_id,))
     conn.commit()
     conn.close()
+
+# ── User Comments CRUD ─────────────────────────────────────────
+def add_user_comment(user_id: int, username: str, feeling: str, comment: str):
+    conn = get_connection()
+    conn.execute(
+        "INSERT INTO user_comments (user_id, username, feeling, comment) VALUES (?,?,?,?)",
+        (user_id, username, feeling, comment)
+    )
+    conn.commit()
+    conn.close()
+
+def get_user_comments() -> list:
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("SELECT * FROM user_comments ORDER BY created_at DESC")
+    rows = [dict(r) for r in c.fetchall()]
+    conn.close()
+    return rows
 
 init_db()

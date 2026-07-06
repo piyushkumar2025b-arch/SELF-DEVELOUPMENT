@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAANG Interactive Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <!-- Babel CDN for JSX compile -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      background-color: transparent;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body>
+  <!-- Canvas container for particle/confetti effects -->
+  <canvas id="animation-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+  <!-- React Mount Point -->
+  <div id="react-root"></div>
+
+  <!-- Custom Animation Scripts -->
+  <script src="badge_animator.js"></script>
+  
+  <script type="text/javascript">
+    // Load script dynamically based on query parameter
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view') || 'dashboard';
+    
+    const script = document.createElement('script');
+    script.type = 'text/babel';
+    if (view === 'visualizer') {
+      script.src = 'AlgorithmVisualizer.jsx';
+    } else {
+      script.src = 'InteractiveDashboard.jsx';
+    }
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
